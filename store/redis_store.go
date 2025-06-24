@@ -47,3 +47,15 @@ func (r *RedisStore) Get(ctx context.Context, key string) (string, error) {
 func (r *RedisStore) Close() error {
 	return r.client.Close()
 }
+
+func (r *RedisStore) Delete(ctx context.Context, short string) error {
+	fmt.Printf("Deleting short URL key: %s\n", short)
+
+	err := r.client.Del(ctx, short).Err()
+	if err != nil {
+		return fmt.Errorf("failed to delete short URL: %v", err)
+	}
+
+	fmt.Println("Deleted successfully.")
+	return nil
+}

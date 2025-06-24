@@ -59,13 +59,41 @@ func main() {
 
 	})
 	http.HandleFunc("/r/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
 		code := r.URL.Path[len("/r/"):]
+		if code == "" {
+			http.Error(w, "Short URL code is required", http.StatusBadRequest)
+			return
+		}
 		longURL, err := urlStore.Get(ctx, code)
 		if err != nil {
 			http.NotFound(w, r) // reply with 404 not found error
 		}
 		http.Redirect(w, r, longURL, http.StatusFound)
 	})
+	http.HandleFunc("/delete/", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		code := r.URL.Path[len("/delete/"):]
+		if code == "" {
+			http.Error(w, "Short URL code is required", http.StatusBadRequest)
+			return
+		}
+		err := urlStore.Delete(ctx, code)
+		if err != nil {
+			http.Error(w, "Failed to delete short URL: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Fprintf(w, "Deleted short URL with code: %s\n", code)
+	})
+
 	fmt.Println("Starting a server on localhost:8080!")
 	http.ListenAndServe(":8080", nil)
+
 }

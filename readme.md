@@ -7,6 +7,9 @@ Side project to get hands on with Go.
   - You could store locally using a map.
   - Using Redis here. Redis stores key-value pairs in RAM(of the remote Redis server). It is essentially a distributed cache(we are using it as a db). The Redis instance is managed by Redis cloud typcially hosted by AWS, Google Cloud, etc. But that means that its not persistent. Shift to something like Supabase or MongoDB if you want persistence.
 
+- Will implement more sophisticated shortening algorithm later
+- Deciding to make new short url even if key already exist. This is for better analytics.
+
 # Some Go Syntax (mostly for myself!)
 
 - Go is designed with composition over inheritance in mind. If a type has a method(corresponding to the interface), it implements that interface without explicitly declaring it.
