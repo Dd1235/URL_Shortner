@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"text/template"
 	"url_shortner/store"
 	"url_shortner/utils"
 
@@ -22,7 +23,8 @@ func main() {
 	defer urlStore.Close()
 
 	http.HandleFunc("/", func(writer http.ResponseWriter, req *http.Request) {
-		fmt.Fprintln(writer, "Welcome to URL Shortner!")
+		tmpl := template.Must(template.ParseFiles("templates/index.html"))
+		tmpl.Execute(writer, nil)
 	})
 	http.HandleFunc("/shorten", func(writer http.ResponseWriter, req *http.Request) {
 
@@ -38,6 +40,23 @@ func main() {
 		shortUrl := fmt.Sprintf("http://localhost:8080/r/%s", shortCode)
 		fmt.Fprintln(writer, shortUrl)
 		fmt.Printf("The short url creaetd for %s is %s", longUrl, shortUrl)
+		fmt.Fprintf(writer, `
+			<div class="mt-4 text-center">
+				<p class="text-lg text-green-700 dark:text-green-400">
+				Shortened URL: 
+				<a href="/r/%s" class="underline hover:text-blue-600 dark:hover:text-blue-400">
+					%s
+				</a>
+				</p>
+				<button 
+				onclick="navigator.clipboard.writeText('%s')" 
+				class="mt-2 text-sm text-gray-600 dark:text-gray-400 underline hover:text-blue-500"
+				>
+				Copy to Clipboard
+				</button>
+			</div>
+			`, shortCode, shortUrl, shortUrl)
+
 	})
 	http.HandleFunc("/r/", func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Path[len("/r/"):]
