@@ -6,11 +6,17 @@ import (
 	"net/http"
 	"url_shortner/store"
 	"url_shortner/utils"
+
+	"github.com/joho/godotenv"
 )
 
 var urlStore store.URLStore
 
 func main() {
+	errLoad := godotenv.Load()
+	if errLoad != nil {
+		fmt.Println("No environment variable found!")
+	}
 	ctx := context.Background()
 	urlStore = store.NewRedisStore()
 	defer urlStore.Close()

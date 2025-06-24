@@ -30,6 +30,7 @@ func (r *RedisStore) Set(ctx context.Context, key string, value string) error {
 
 	err := r.client.Set(ctx, key, value, 0).Err() // yes, pointer.val works for pointers too, automatically deref
 	// 0 - there is no expiration time in the database for this entry
+	fmt.Println("The key", key, "has been set to", value, "successfully")
 	return err
 }
 
