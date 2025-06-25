@@ -9,6 +9,7 @@ Side project to get hands on with Go.
 
 - Will implement more sophisticated shortening algorithm later
 - Deciding to make new short url even if key already exist. This is for better analytics.
+- will make mcp server for this later.
 
 # Some Go Syntax (mostly for myself!)
 
@@ -151,6 +152,64 @@ Wow, the rabbit hole goes on.
 - gives more context to the only one main.go with `func main()` with a package main thing, go runtime is to manage one scheduler with one go routine pool nad one stack, makes compiling simpler too
 
 - so go does it best
+
+# Dynamo db
+
+- Managed NoSQL database
+- cloud native, serverless, key-value and document store
+- elastic scaling
+- useful when you know your access patterns
+- access through api/orm authorized through IAM
+- integrates well with other aws services
+- It is one of the most popular nosql database out there, provides consistent performance at any skills
+- 2021 prime day sales, trillions of calls to dynamodb, high availability iwth digit millisecond performance
+- consistent performance at any scale. (low single-digit millisecond latency)
+- Workload pattern
+  - multi tenant - load of one customer should not affect another
+  - high resource utilization
+  - boundless scale of tables
+  - preditable performance
+  - highly available (replication and recovery)
+  - flexible usecase support
+
+## Architecture
+
+- multiple table, each is a collection of items
+- each item - primary key
+- primary key needs to be specified
+- sort key + partition key(required) - determines where and how the data is stored
+- item -> f(k) - determines which partition the data goes into. Hash based, range based routing etc.
+- Also supports secondary indexes. Indexed value -> PK
+
+# AWS Lambda
+
+- Traditional company specific data centers were expensive, hard to scale, and required a lot of maintenance.
+- EC2 - elastic compute cloud. Managed service. Use amazons servers insteads.
+- Enhanced cloud infrastructure - we pay per execution in lambda, not for the hardware, so based on traffic you pay.
+- Pay per use cloud computing
+- Run code at scale without worrying about servers
+- write functions - primary unit of lambda.
+
+workflow:
+
+- create a function
+- write and upload your code
+- run your function
+- no servers to manage
+- patching and security updates are handled by AWS
+- autoscaling
+- netflix, udemy, lyft, etc. use lambda
+
+# API Gateway
+
+- parameter validation
+- allow-list/deny-list (and some rate limit checks)
+- authentication/authorization(identity provider)
+- high level rate limit
+- dynamic routing
+- service discovery
+- protocol conversation
+- should be deployed in multiple regions
 
 # Useful ref
 

@@ -59,3 +59,22 @@ func (r *RedisStore) Delete(ctx context.Context, short string) error {
 	fmt.Println("Deleted successfully.")
 	return nil
 }
+
+func (r *RedisStore) All(ctx context.Context) (map[string]string, error) {
+	result := make(map[string]string)
+
+	// Use Redis SCAN to iterate keys safely
+	iter := r.client.Scan(ctx, 0, "*", 0).Iterator()
+	for iter.Next(ctx) {
+		key := iter.Val()
+		val, err := r.client.Get(ctx, key).Result()
+		if err != nil && err != redis.Nil {
+			return nil, fmt.Errorf("failed to get value for key %s: %v", key, err)
+		}
+		result[key] = val
+	}
+	if err := iter.Err(); err != nil {
+		return nil, fmt.Errorf("error scanning keys: %v", err)
+	}
+	return result, nil
+}

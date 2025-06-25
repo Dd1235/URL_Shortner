@@ -59,10 +59,7 @@ func main() {
 
 	})
 	http.HandleFunc("/r/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-			return
-		}
+
 		code := r.URL.Path[len("/r/"):]
 		if code == "" {
 			http.Error(w, "Short URL code is required", http.StatusBadRequest)
@@ -89,8 +86,44 @@ func main() {
 			http.Error(w, "Failed to delete short URL: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
+		w.WriteHeader(http.StatusOK)
 
 		fmt.Fprintf(w, "Deleted short URL with code: %s\n", code)
+	})
+
+	http.HandleFunc("/all", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		data, err := urlStore.All(ctx)
+		if err != nil {
+			http.Error(w, "Failed to fetch data: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		for short, long := range data {
+			fmt.Fprintf(w, `
+				<li class="py-1 flex items-start justify-between">
+				<span class="truncate max-w-[6rem] mr-2">%s →</span>
+
+				<div class="flex-1 min-w-0">
+					<a href="%s" target="_blank"
+					class="text-blue-600 underline break-words">%s</a>
+				</div>
+
+				<button type="button"                 
+						hx-delete="/delete/%s"
+						hx-target="closest li"
+						hx-swap="outerHTML"
+						class="ml-3 text-xs text-red-500 hover:text-red-700">
+					Delete
+				</button>
+				</li>`, short, long, long, short)
+
+		}
+
 	})
 
 	fmt.Println("Starting a server on localhost:8080!")
