@@ -1,0 +1,8 @@
+.git
+*.log
+*.md
+.env
+.env.*
+__pycache__
+*.test
+assets/
